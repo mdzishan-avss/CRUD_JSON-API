@@ -1,0 +1,33 @@
+<div class="d-flex" style="height: 100vh; overflow: hidden;">
+
+  <!-- SIDEBAR -->
+  <div class="bg-dark text-white p-3" style="width:220px; height:100vh;">
+
+    <h4 class="mb-4">Angular17 CRUD-API</h4>
+
+    <ul class="nav flex-column">
+
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white" routerLink="/dashboard/users">
+          Users
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <button class="btn btn-danger w-100" (click)="logout()">
+          Logout
+        </button>
+      </li>
+
+    </ul>
+
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="p-4 w-100" style="overflow-y:auto;">
+
+    <router-outlet></router-outlet>
+
+  </div>
+
+</div>

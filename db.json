@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "name": "dp",
+      "email": "dp@gmail.com",
+      "password": "dp",
+      "id": "gMjqvGmIN3I",
+      "isActive": true
+    },
+    {
+      "name": "Mohd Zishan",
+      "email": "md.zishan@avsstech.com",
+      "password": "m",
+      "id": "AT4Yy9i6ITs",
+      "isActive": true
+    },
+    {
+      "name": "Zishan",
+      "email": "md.zishan@gmail.com",
+      "password": "123",
+      "id": "acWGpjdcFxI",
+      "isActive": true
+    },
+    {
+      "name": "Mohd Zishan",
+      "email": "md.zishan@gmail.com",
+      "password": "123",
+      "id": "yYgTNNjbycw",
+      "isActive": true
+    },
+    {
+      "name": "Deepak Singh",
+      "email": "dp@gmail.com",
+      "password": "deepak",
+      "id": "K1I6vhHEpmU",
+      "isActive": true
+    }
+  ],
+  "auth": [
+    {
+      "id": "1",
+      "email": "admin@admin.com",
+      "password": "admin",
+      "name": "Admin",
+      "isActive": true
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
