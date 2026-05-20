@@ -6,41 +6,41 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserService {
 
-  apiUrl = 'http://localhost:4000/users';
+  apiUrl = 'http://localhost:3000/users';
+  authUrl = 'http://localhost:3000/auth';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
+  // GET USERS
+  getUsers() {
 
-  getUsers(page: number, limit: number) {
+  return this.http.get<any[]>(this.apiUrl);
+}
 
-    // console.log("URL HIT:",
-    //   `${this.apiUrl}?_page=${page}&_limit=${limit}`
-    // );
-
-    return this.http.get<any[]>(
-      `${this.apiUrl}`
-    );
-  }
-  // Add User
+  // ADD USER
   addUser(user: any) {
     return this.http.post(this.apiUrl, user);
   }
 
-  // Update User
-  updateUser(id: number, user: any) {
+  // SAVE FOR LOGIN
+  registerUser(user: any) {
+    return this.http.post(this.authUrl, user);
+  }
+
+  // UPDATE USER
+  updateUser(id: any, user: any) {
     return this.http.put(`${this.apiUrl}/${id}`, user);
   }
 
-  // Delete User
-  deleteUser(id: number) {
+  // DELETE USER
+  deleteUser(id: any) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  // user.service.ts
-  updateUserStatus(id: number, status: boolean) {
-
-    return this.http.patch(`${this.apiUrl}/${id}`, { isActive: status });
+  // TOGGLE STATUS
+  updateUserStatus(id: any, status: boolean) {
+    return this.http.patch(`${this.apiUrl}/${id}`, {
+      isActive: status
+    });
   }
-
-
 }

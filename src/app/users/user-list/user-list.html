@@ -1,94 +1,88 @@
-<div class="container-fluid p-4">
+<div class="container p-4">
 
-    <!-- 1. Search Box aur Add Button Row -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-md-8 d-flex justify-content-center gap-3">
-            <div class="input-group" style="max-width: 400px;">
-                <span class="input-group-text bg-white">🔍</span>
-                <input type="text" class="form-control" placeholder="Search by name or email..."
-                    [(ngModel)]="searchText">
-            </div>
-            <button *ngIf="!showForm" class="btn btn-primary px-4" (click)="toggleForm()">+ Add New User</button>
-        </div>
+    <input class="form-control mb-3" placeholder="Search..." [(ngModel)]="searchText" (input)="onSearchChange()">
+
+    <button class="btn btn-primary mb-3" (click)="toggleForm()">
+        Add User
+    </button>
+
+    <!-- FORM -->
+    <div *ngIf="showForm" class="mb-3">
+
+        <input class="form-control mb-2" [(ngModel)]="name" placeholder="Name">
+        <input class="form-control mb-2" [(ngModel)]="email" placeholder="Email">
+        <input class="form-control mb-2" [(ngModel)]="password" placeholder="Password">
+
+        <button class="btn btn-success" (click)="saveUser()">Save</button>
+        <button class="btn btn-secondary" (click)="resetForm()">
+            Cancel
+        </button>
     </div>
 
-    <!-- 2. Form Section -->
-    <div class="row justify-content-center mb-4" *ngIf="showForm">
-        <div class="col-md-8">
-            <div class="card shadow-sm p-4 border-0" style="background-color: #f8f9fa;">
-                <h4 class="mb-3">{{ editMode ? 'Edit User' : 'Add New User' }}</h4>
-                <div class="row g-3">
-                    <div class="col-md-4"><input type="text" [(ngModel)]="name" class="form-control" placeholder="Name">
-                    </div>
-                    <div class="col-md-4"><input type="email" [(ngModel)]="email" class="form-control"
-                            placeholder="Email"></div>
-                    <div class="col-md-4" *ngIf="!editMode"><input type="password" [(ngModel)]="password"
-                            class="form-control" placeholder="Password"></div>
-                </div>
-                <div class="mt-3 d-flex gap-2">
-                    <button class="btn btn-success px-4" (click)="saveUser()">{{ editMode ? 'Update' : 'Save'
-                        }}</button>
-                    <button class="btn btn-secondary px-4" (click)="resetForm()">Cancel</button>
-                </div>
-            </div>
-        </div>
+    <!-- LOADING -->
+    <div *ngIf="isLoading" class="text-center">
+        Loading...
     </div>
 
-    <!-- 3. Table Section -->
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="table-responsive shadow-sm rounded border">
-                <div *ngIf="isLoading" class="text-center py-5">
-                    <div class="spinner-border text-primary"></div>
-                    <p>Loading...</p>
-                </div>
-                <table *ngIf="!isLoading" class="table table-hover align-middle mb-0 bg-white">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="ps-3">Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Jab Data ho -->
-                        <tr *ngFor="let user of users">
-                            <td class="ps-3 text-capitalize">{{ user.name }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                        [checked]="user.isActive" (change)="toggleStatus(user)">
-                                    <label class="form-check-label ms-2" [class.text-success]="user.isActive"
-                                        [class.text-danger]="!user.isActive">
-                                        {{ user.isActive ? 'Active' : 'Inactive' }}
-                                    </label>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <button class="btn btn-sm btn-info me-2 text-white"
-                                    (click)="editUser(user)">Edit</button>
-                                <button class="btn btn-sm btn-danger" (click)="deleteUser(user.id)">Delete</button>
-                            </td>
-                        </tr>
+    <!-- TABLE -->
+    <div *ngIf="!isLoading">
 
-                        <!-- Jab Loading ho raha ho -->
-                        <tr *ngIf="isLoading">
-                            <td colspan="4" class="text-center py-5">
-                                <div class="spinner-border text-primary" role="status"></div>
-                                <p class="mt-2 text-muted">Loading data...</p>
-                            </td>
-                        </tr>
+        <table class="table table-bordered table-striped">
 
-                        <!-- Jab Data khali ho aur loading na ho -->
-                        <tr *ngIf="!isLoading && filteredUsers.length === 0">
-                            <td colspan="4" class="text-center py-4 text-muted">No users found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr *ngIf="users.length === 0">
+                    <td colspan="4" class="text-center">
+                        No Users Found
+                    </td>
+                </tr>
+
+                <tr *ngFor="let user of users">
+
+                    <td>{{ user.name }}</td>
+
+                    <td>{{ user.email }}</td>
+
+                    <td>
+
+                        <div class="form-check form-switch">
+
+                            <input class="form-check-input" type="checkbox" [checked]="user.isActive"
+                                (change)="toggleStatus(user)" />
+
+                            <label class="form-check-label">
+                                {{ user.isActive ? 'Active' : 'Inactive' }}
+                            </label>
+
+                        </div>
+
+                    </td>
+
+                    <td>
+
+                        <button class="btn btn-primary btn-sm me-2" (click)="editUser(user)">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
     </div>
-</div>
-<!-- <router-outlet></router-outlet> -->

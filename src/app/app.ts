@@ -9,34 +9,34 @@ import { UserService } from './services/user.service';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App {}
 
-    constructor(private userservice: UserService) {}
-  // protected readonly title = signal('API');
+//     constructor(private userservice: UserService) {}
+//   // protected readonly title = signal('API');
 
-  users: any[] = [];
+//   users: any[] = [];
 
-page: number = 1;
-limit: number = 5;
+// page: number = 1;
+// limit: number = 5;
 
-loadUsers() {
-  this.userservice.getUsers(this.page, this.limit)
-    .subscribe((res: any) => {
-      this.users = res;
-    });
-}
+// loadUsers() {
+//   this.userservice.getUsers(this.page, this.limit)
+//     .subscribe((res: any) => {
+//       this.users = res;
+//     });
+// }
 
-nextPage() {
-  this.page++;
-  this.loadUsers();
-}
+// nextPage() {
+//   this.page++;
+//   this.loadUsers();
+// }
 
-prevPage() {
-  if (this.page > 1) {
-    this.page--;
-    this.loadUsers();
-  }
-}
+// prevPage() {
+//   if (this.page > 1) {
+//     this.page--;
+//     this.loadUsers();
+//   }
+// }
 
 
-}
+// }

@@ -1,6 +1,12 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -10,140 +16,208 @@ import { UserService } from '../../services/user.service';
   templateUrl: './user-list.html'
 })
 export class UserList implements OnInit {
+
   users: any[] = [];
-  searchText: string = '';
+  
+
+  searchText = '';
+
+  isLoading = false;
+
   name = '';
   email = '';
   password = '';
+
   editMode = false;
-  selectedId: number = 0;
+
+  selectedId: any = null;
+
   showForm = false;
-  page: number = 1;
-  limit: number = 5;
 
-  // Naya Variable: Buffering control karne ke liye
-  isLoading: boolean = false;
+  constructor(
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-  constructor(private userService: UserService, private cdr: ChangeDetectorRef) { }
+  ngOnInit(): void {
 
-  ngOnInit() {
-    console.log('user list loaded')
-    this.loadUsers();
+    setTimeout(() => {
+      this.loadUsers();
+    });
   }
 
-  get filteredUsers() {
+  // LOAD USERS
+  loadUsers(): void {
 
-    if (!Array.isArray(this.users)) {
-      return [];
-    }
-
-    const search = this.searchText?.toLowerCase().trim();
-
-    if (!search) {
-      return this.users;
-    }
-
-    return this.users.filter((user: any) =>
-      (user.name || '').toLowerCase().includes(search) ||
-      (user.email || '').toLowerCase().includes(search)
-    );
-  }
-
-  loadUsers() {
     this.isLoading = true;
 
-    this.userService.getUsers(this.page, this.limit).subscribe({
-      next: (res: any) => {
-        this.isLoading = false;
-        this.users = res;
-        this.cdr.detectChanges();
-      },
+    this.userService.getUsers()
+      .subscribe({
 
-      error: (err: any) => {
-        console.error(err);
-        this.users = [];
-        this.isLoading = false;
-      }
-    });
+        next: (res: any[]) => {
 
-  }
-  toggleForm() {
-    this.showForm = !this.showForm;
-    if (!this.showForm) this.resetForm();
-  }
+          console.log('USERS:', res);
 
-  saveUser() {
-    const user = {
-      name: this.name,
-      email: this.email,
-      password: this.password
-    };
+          // 🔥 FRONTEND SEARCH
+          if (this.searchText.trim()) {
 
-    if (this.editMode) {
-      this.userService.updateUser(this.selectedId, user).subscribe({
-        next: () => {
-          this.loadUsers();
-          this.resetForm();
+            this.users = res.filter(user =>
+
+              user.name.toLowerCase()
+                .includes(this.searchText.toLowerCase())
+
+            );
+
+          }
+
+          else {
+
+            this.users = res;
+          }
+
+          this.isLoading = false;
+
+          this.cdr.detectChanges();
         },
+
         error: (err) => {
-          console.error(err);
+
+          console.log(err);
+
+          this.users = [];
+
+          this.isLoading = false;
+
+          this.cdr.detectChanges();
         }
       });
-    } else {
-      this.userService.addUser(user).subscribe({
-        next: (res) => {
-          console.log("Saved:", res);
-          this.loadUsers();
-          this.resetForm();
-        },
-        error: (err) => {
-          console.error("Save failed", err);
-        }
-      });
-    }
   }
-  nextPage() {
-    this.page++;
+
+  // SEARCH
+  onSearchChange(): void {
+
     this.loadUsers();
   }
-  prevPage() {
-    if (this.page > 1) {
-      this.page--;
-      this.loadUsers();
+
+  // SHOW FORM
+  toggleForm(): void {
+
+    this.showForm = !this.showForm;
+  }
+
+  // SAVE USER
+  saveUser(): void {
+
+    if (!this.name || !this.email || !this.password) {
+
+      alert('All fields required');
+
+      return;
+    }
+
+    const data = {
+      name: this.name,
+      email: this.email,
+      password: this.password,
+      isActive: true
+    };
+
+    // EDIT
+    if (this.editMode) {
+
+      this.userService.updateUser(this.selectedId, data)
+        .subscribe(() => {
+
+          this.resetForm();
+
+          this.loadUsers();
+        });
+
+    }
+
+    // ADD
+    else {
+
+      this.userService.addUser(data)
+        .subscribe(() => {
+
+          // ALSO SAVE FOR LOGIN
+          this.userService.registerUser(data)
+            .subscribe(() => {
+
+              this.resetForm();
+
+              this.loadUsers();
+            });
+        });
     }
   }
-  toggleStatus(user: any) {
-    const updatedStatus = !user.isActive; // Toggle current status
 
-    this.userService.updateUserStatus(user.id, updatedStatus).subscribe({
-      next: () => {
-        user.isActive = updatedStatus; // UI update
-        console.log(`User ${user.name} is now ${user.isActive ? 'Active' : 'Inactive'}`);
-      },
-      error: (err) => {
-        console.error("Status update failed", err);
-        alert("Unable to change the status!");
-      }
-    });
-  }
-  editUser(user: any) {
+  // EDIT USER
+  editUser(user: any): void {
+
     this.showForm = true;
+
     this.editMode = true;
+
     this.selectedId = user.id;
+
     this.name = user.name;
+
     this.email = user.email;
+
     this.password = user.password;
   }
 
-  deleteUser(id: number) {
-    if (confirm("Are you sure?")) {
-      this.userService.deleteUser(id).subscribe(() => this.loadUsers());
+  // DELETE USER
+  deleteUser(id: any): void {
+
+    if (confirm('Delete User?')) {
+
+      this.userService.deleteUser(id)
+        .subscribe(() => {
+
+          this.loadUsers();
+        });
     }
   }
 
-  resetForm() {
-    this.name = ''; this.email = ''; this.password = '';
-    this.editMode = false; this.showForm = false;
+  // TOGGLE STATUS
+  toggleStatus(user: any): void {
+
+    const updatedStatus = !user.isActive;
+
+    this.userService.updateUserStatus(user.id, updatedStatus)
+      .subscribe({
+        next: () => {
+
+          // 🔥 instant UI update
+          this.users = this.users.map(u =>
+            u.id === user.id
+              ? { ...u, isActive: updatedStatus }
+              : u
+          );
+        },
+
+        error: (err) => {
+          console.log(err);
+        }
+      });
   }
 
+  // RESET FORM
+  resetForm(): void {
+
+    this.name = '';
+
+    this.email = '';
+
+    this.password = '';
+
+    this.editMode = false;
+
+    this.selectedId = null;
+
+    this.showForm = false;
+  }
 }

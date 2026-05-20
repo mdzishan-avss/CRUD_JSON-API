@@ -19,40 +19,44 @@ export class Login {
   constructor(
     private auth: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
-  
-  
-login() {
-  console.log('login clicked');
 
-  this.auth.login(this.email, this.password)
-    .subscribe({
-      next: (res: any) => {
 
-        if (res && res.length > 0) {
+  login() {
+    console.log('login clicked');
 
-          const user = res[0];
+    this.auth.login(this.email, this.password)
+      .subscribe({
+        next: (res: any) => {
 
-          if (user.isActive === false) {
-            alert("Account inactive");
+          console.log("LOGIN RESPONSE:", res);
+
+          // ✅ SAFE CHECK
+          if (!res || !Array.isArray(res) || res.length === 0) {
+            alert('Invalid Credentials ❌');
             return;
           }
 
+          const user = res[0];
+
+          // 🔴 INACTIVE USER BLOCK
+          if (user.isActive === false) {
+            alert("Account inactive ❌");
+            return;
+          }
+
+          // ✅ SUCCESS LOGIN
           localStorage.setItem('user', JSON.stringify(user));
 
           this.router.navigate(['/dashboard/users']);
+        },
 
-        } else {
-          alert('Invalid Credentials ❌');
+        error: (err) => {
+          console.error(err);
+          alert('Server Error');
         }
-
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Server Error');
-      }
-    });
-}
+      });
   }
-  
+}
+

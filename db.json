@@ -1,32 +1,11 @@
 {
   "users": [
     {
-      "name": "dp",
-      "email": "dp@gmail.com",
-      "password": "dp",
-      "id": "gMjqvGmIN3I",
-      "isActive": true
-    },
-    {
       "name": "Mohd Zishan",
       "email": "md.zishan@avsstech.com",
       "password": "m",
-      "id": "AT4Yy9i6ITs",
-      "isActive": true
-    },
-    {
-      "name": "Zishan",
-      "email": "md.zishan@gmail.com",
-      "password": "123",
-      "id": "acWGpjdcFxI",
-      "isActive": true
-    },
-    {
-      "name": "Mohd Zishan",
-      "email": "md.zishan@gmail.com",
-      "password": "123",
-      "id": "yYgTNNjbycw",
-      "isActive": true
+      "isActive": true,
+      "id": "AT4Yy9i6ITs"
     },
     {
       "name": "Deepak Singh",
@@ -34,6 +13,34 @@
       "password": "deepak",
       "id": "K1I6vhHEpmU",
       "isActive": true
+    },
+    {
+      "name": "admin",
+      "email": "admin@admin.com",
+      "password": "admin",
+      "isActive": true,
+      "id": "FRH8d2Ofn_w"
+    },
+    {
+      "name": "avss",
+      "email": "avss@gmail.com",
+      "password": "avss",
+      "isActive": true,
+      "id": "dreX7kqtmAw"
+    },
+    {
+      "name": "qw",
+      "email": "qw",
+      "password": "qw",
+      "isActive": true,
+      "id": "uBksRc80LEs"
+    },
+    {
+      "name": "dp",
+      "email": "dp@gmail.com",
+      "password": "dp",
+      "isActive": true,
+      "id": "lkJSPKoGr8w"
     }
   ],
   "auth": [
@@ -43,6 +50,50 @@
       "password": "admin",
       "name": "Admin",
       "isActive": true
+    },
+    {
+      "name": "avss",
+      "email": "avss@avss.com",
+      "password": "avss",
+      "id": "te14wfMdw6E"
+    },
+    {
+      "name": "Mohd Zishan",
+      "email": "mohd.zishan@gmail.com",
+      "password": "123",
+      "id": "IoF4fKGMoLw"
+    },
+    {
+      "name": "pk",
+      "email": "pk@pk.com",
+      "password": "pk",
+      "id": "3KOKYSvrbdE"
+    },
+    {
+      "name": "q",
+      "email": "q",
+      "password": "q",
+      "id": "Zq2vhMyW6Z4"
+    },
+    {
+      "name": "h",
+      "email": "h",
+      "password": "h",
+      "id": "8FeH9tMtUgM"
+    },
+    {
+      "name": "qw",
+      "email": "qw",
+      "password": "qw",
+      "isActive": true,
+      "id": "wrsGsRQH6HM"
+    },
+    {
+      "name": "dp",
+      "email": "dp@gmail.com",
+      "password": "dp",
+      "isActive": true,
+      "id": "DygnNCqPnYY"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
