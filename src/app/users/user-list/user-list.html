@@ -84,5 +84,22 @@
             </tbody>
 
         </table>
+        <!-- ================= PAGINATION UI ================= -->
+
+        <div class="d-flex justify-content-center align-items-center mt-3 gap-3">
+
+            <button class="btn btn-secondary" (click)="prevPage()" [disabled]="page === 1">
+                Prev
+            </button>
+
+            <span class="fw-bold">
+                Page {{ page }}
+            </span>
+
+            <button class="btn btn-secondary" (click)="nextPage()">
+                Next
+            </button>
+
+        </div>
 
     </div>

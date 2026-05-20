@@ -18,7 +18,6 @@ import { UserService } from '../../services/user.service';
 export class UserList implements OnInit {
 
   users: any[] = [];
-  
 
   searchText = '';
 
@@ -29,24 +28,26 @@ export class UserList implements OnInit {
   password = '';
 
   editMode = false;
-
   selectedId: any = null;
 
   showForm = false;
 
+  // 🔥 ADDED FOR PAGINATION (NEW)
+  page = 1;
+  limit = 5;
+
   constructor(
     private userService: UserService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-
-    setTimeout(() => {
-      this.loadUsers();
-    });
+    this.loadUsers();
   }
 
-  // LOAD USERS
+  // =========================
+  // LOAD USERS (UPDATED)
+  // =========================
   loadUsers(): void {
 
     this.isLoading = true;
@@ -58,22 +59,18 @@ export class UserList implements OnInit {
 
           console.log('USERS:', res);
 
-          // 🔥 FRONTEND SEARCH
-          if (this.searchText.trim()) {
+          // 🔥 SEARCH (SAFE)
+          let filtered = this.searchText.trim()
+            ? res.filter(user =>
+                user.name.toLowerCase().includes(this.searchText.toLowerCase())
+              )
+            : res;
 
-            this.users = res.filter(user =>
+          // 🔥 PAGINATION LOGIC (NEW)
+          const start = (this.page - 1) * this.limit;
+          const end = start + this.limit;
 
-              user.name.toLowerCase()
-                .includes(this.searchText.toLowerCase())
-
-            );
-
-          }
-
-          else {
-
-            this.users = res;
-          }
+          this.users = filtered.slice(start, end);
 
           this.isLoading = false;
 
@@ -93,19 +90,47 @@ export class UserList implements OnInit {
       });
   }
 
-  // SEARCH
+  // =========================
+  // SEARCH (UPDATED)
+  // =========================
   onSearchChange(): void {
+
+    this.page = 1; // 🔥 RESET PAGE ON SEARCH
 
     this.loadUsers();
   }
 
-  // SHOW FORM
+  // =========================
+  // PAGINATION (NEW ADDED)
+  // =========================
+  nextPage(): void {
+
+    this.page++;
+
+    this.loadUsers();
+  }
+
+  prevPage(): void {
+
+    if (this.page > 1) {
+
+      this.page--;
+
+      this.loadUsers();
+    }
+  }
+
+  // =========================
+  // FORM TOGGLE
+  // =========================
   toggleForm(): void {
 
     this.showForm = !this.showForm;
   }
 
+  // =========================
   // SAVE USER
+  // =========================
   saveUser(): void {
 
     if (!this.name || !this.email || !this.password) {
@@ -122,7 +147,6 @@ export class UserList implements OnInit {
       isActive: true
     };
 
-    // EDIT
     if (this.editMode) {
 
       this.userService.updateUser(this.selectedId, data)
@@ -133,15 +157,11 @@ export class UserList implements OnInit {
           this.loadUsers();
         });
 
-    }
-
-    // ADD
-    else {
+    } else {
 
       this.userService.addUser(data)
         .subscribe(() => {
 
-          // ALSO SAVE FOR LOGIN
           this.userService.registerUser(data)
             .subscribe(() => {
 
@@ -153,7 +173,9 @@ export class UserList implements OnInit {
     }
   }
 
+  // =========================
   // EDIT USER
+  // =========================
   editUser(user: any): void {
 
     this.showForm = true;
@@ -169,7 +191,9 @@ export class UserList implements OnInit {
     this.password = user.password;
   }
 
+  // =========================
   // DELETE USER
+  // =========================
   deleteUser(id: any): void {
 
     if (confirm('Delete User?')) {
@@ -182,30 +206,23 @@ export class UserList implements OnInit {
     }
   }
 
+  // =========================
   // TOGGLE STATUS
+  // =========================
   toggleStatus(user: any): void {
 
     const updatedStatus = !user.isActive;
 
     this.userService.updateUserStatus(user.id, updatedStatus)
-      .subscribe({
-        next: () => {
+      .subscribe(() => {
 
-          // 🔥 instant UI update
-          this.users = this.users.map(u =>
-            u.id === user.id
-              ? { ...u, isActive: updatedStatus }
-              : u
-          );
-        },
-
-        error: (err) => {
-          console.log(err);
-        }
+        this.loadUsers();
       });
   }
 
+  // =========================
   // RESET FORM
+  // =========================
   resetForm(): void {
 
     this.name = '';
