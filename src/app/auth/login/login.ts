@@ -32,22 +32,24 @@ export class Login {
 
           console.log("LOGIN RESPONSE:", res);
 
-          // ✅ SAFE CHECK
+          //  SAFE CHECK
           if (!res || !Array.isArray(res) || res.length === 0) {
-            alert('Invalid Credentials ❌');
+            alert('Invalid Credentials ');
             return;
           }
 
           const user = res[0];
 
-          // 🔴 INACTIVE USER BLOCK
+          //  INACTIVE USER BLOCK
           if (user.isActive === false) {
-            alert("Account inactive ❌");
+            alert("Account inactive ");
             return;
           }
 
-          // ✅ SUCCESS LOGIN
+          //  SUCCESS LOGIN
           localStorage.setItem('user', JSON.stringify(user));
+
+          localStorage.setItem('isLoggedIn', 'true');
 
           this.router.navigate(['/dashboard/users']);
         },

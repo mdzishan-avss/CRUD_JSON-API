@@ -1,46 +1,68 @@
 <div class="container mt-5" style="max-width:400px;">
 
-  <div class="card p-4 shadow">
+  <h2 class="mb-4">Register</h2>
 
-    <h3 class="text-center mb-4">Sign Up</h3>
+  <form [formGroup]="registerForm"
+        (ngSubmit)="submit()">
 
-    <form (ngSubmit)="register()">
+    <!-- NAME -->
+    <div class="mb-3">
 
       <input
         type="text"
-        class="form-control mb-3"
+        class="form-control"
         placeholder="Name"
-        [(ngModel)]="name"
-        name="name"
-      >
+        formControlName="name">
+
+      <small class="text-danger"
+             *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.invalid">
+
+        Name must be minimum 3 characters
+
+      </small>
+
+    </div>
+
+    <!-- EMAIL -->
+    <div class="mb-3">
 
       <input
         type="email"
-        class="form-control mb-3"
+        class="form-control"
         placeholder="Email"
-        [(ngModel)]="email"
-        name="email"
-      >
+        formControlName="email">
+
+      <small class="text-danger"
+             *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
+
+        Enter valid email
+
+      </small>
+
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="mb-3">
 
       <input
         type="password"
-        class="form-control mb-3"
+        class="form-control"
         placeholder="Password"
-        [(ngModel)]="password"
-        name="password"
-      >
+        formControlName="password">
 
-      <button class="btn btn-success w-100">
-        Sign Up
-      </button>
+      <small class="text-danger"
+             *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
 
-    </form>
+        Password minimum 4 characters
 
-    <div class="text-center mt-3">
-      Already have an account?
-      <a routerLink="/login">Login</a>
+      </small>
+
     </div>
 
-  </div>
+    <button class="btn btn-primary w-100">
+      Register
+    </button>
+
+  </form>
 
 </div>

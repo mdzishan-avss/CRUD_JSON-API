@@ -9,7 +9,7 @@ import { UserService } from './services/user.service';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {}
+export class App { }
 
 //     constructor(private userservice: UserService) {}
 //   // protected readonly title = signal('API');

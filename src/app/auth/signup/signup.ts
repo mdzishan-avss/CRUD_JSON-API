@@ -1,55 +1,94 @@
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
-
-import { AuthService } from '../../services/auth.service';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './signup.html'
 })
 export class Register {
 
-  name = '';
-  email = '';
-  password = '';
+  registerForm!: FormGroup;
 
   constructor(
-    private auth: AuthService,
-    private router: Router
-  ) {}
+    private fb: FormBuilder,
+    private router: Router,
+    private toastr: ToastrService,
+    private userService: UserService
+  ) {
 
-  register() {
+    this.registerForm = this.fb.group({
 
-    console.log('signup clicked');
+      name: ['', [Validators.required, Validators.minLength(3)]],
 
-    const user = {
-      name: this.name,
-      email: this.email,
-      password: this.password
-    };
+      email: ['', [
+        Validators.required,
+        Validators.email
+      ]],
 
-    console.log(user);
-
-    this.auth.register(user).subscribe({
-
-      next: (res) => {
-
-        console.log('saved', res);
-
-        alert('Signup Successful');
-
-        this.router.navigate(['/login']);
-      },
-
-      error: (err) => {
-
-        console.log(err);
-
-      }
+      password: ['', [
+        Validators.required,
+        Validators.minLength(4)
+      ]]
     });
+  }
+
+  submit() {
+              this.toastr.success('Registration Successful', "gdxgxdfgh");
+              console.log("dsxfsdzfvdgxd")
+
+
+    if (this.registerForm.invalid) {
+
+      this.toastr.error('Please fill all fields correctly');
+
+      this.registerForm.markAllAsTouched();
+
+      return;
+    }
+
+   const data = {
+  ...this.registerForm.value,
+  isActive: true
+};
+
+this.userService.registerUser(data)
+  .subscribe({
+
+    next: () => {
+
+      this.userService.addUser(data)
+        .subscribe(() => {
+
+          this.toastr.success('Registration Successful');
+
+          this.registerForm.reset();
+
+          this.router.navigate(['/login']);
+        });
+
+      this.toastr.success('Registration Successful');
+
+      this.registerForm.reset();
+
+      this.router.navigate(['/login']);
+
+    },
+
+    error: () => {
+
+      this.toastr.error('Registration Failed');
+    }
+  }); 
   }
 }

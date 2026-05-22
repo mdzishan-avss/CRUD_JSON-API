@@ -21,7 +21,9 @@ export class DashboardLayout {
 
 
   logout() {
-    localStorage.removeItem('user');
-    this.router.navigate(['/login']);
-  }
+
+  localStorage.removeItem('isLoggedIn');
+
+  this.router.navigate(['/login']);
+}
 }

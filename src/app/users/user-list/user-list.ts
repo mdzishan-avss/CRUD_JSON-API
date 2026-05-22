@@ -1,21 +1,20 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectorRef
-} from '@angular/core';
-
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './user-list.html'
 })
 export class UserList implements OnInit {
+
+  userForm!: FormGroup;
 
   users: any[] = [];
 
@@ -32,22 +31,47 @@ export class UserList implements OnInit {
 
   showForm = false;
 
-  // 🔥 ADDED FOR PAGINATION (NEW)
+  // ADDED FOR PAGINATION 
   page = 1;
   limit = 5;
 
+  totalPages = 1;
+  totalPagesArray: number[] = [];
+
   constructor(
     private userService: UserService,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private toastr: ToastrService,
+    private cdr: ChangeDetectorRef,
+    private fb: FormBuilder
+  ) {
+    this.userForm = this.fb.group({
+
+      name: ['', [Validators.required, Validators.minLength(3)]],
+
+      email: ['', [Validators.required, Validators.email]],
+
+      password: ['', [Validators.required, Validators.minLength(4)]]
+
+    });
+  }
+
+
 
   ngOnInit(): void {
     this.loadUsers();
   }
 
-  // =========================
+  openModal() {
+    const modal = document.getElementById('userModal');
+
+    if (modal) {
+      // @ts-ignore
+      const bsModal = new bootstrap.Modal(modal);
+      bsModal.show();
+    }
+  }
+
   // LOAD USERS (UPDATED)
-  // =========================
   loadUsers(): void {
 
     this.isLoading = true;
@@ -59,14 +83,26 @@ export class UserList implements OnInit {
 
           console.log('USERS:', res);
 
-          // 🔥 SEARCH (SAFE)
+          //  CACHE STORE HERE
+          this.userService.setUsersCache(res);
+
+          //  SEARCH
           let filtered = this.searchText.trim()
             ? res.filter(user =>
-                user.name.toLowerCase().includes(this.searchText.toLowerCase())
-              )
+              user.name.toLowerCase().includes(this.searchText.toLowerCase())
+            )
             : res;
+            filtered = filtered.reverse();
 
-          // 🔥 PAGINATION LOGIC (NEW)
+
+          this.totalPages = Math.ceil(filtered.length / this.limit);
+
+          this.totalPagesArray = Array.from(
+            { length: this.totalPages },
+            (_, i) => i + 1
+          );
+
+          //  PAGINATION
           const start = (this.page - 1) * this.limit;
           const end = start + this.limit;
 
@@ -90,19 +126,15 @@ export class UserList implements OnInit {
       });
   }
 
-  // =========================
   // SEARCH (UPDATED)
-  // =========================
   onSearchChange(): void {
 
-    this.page = 1; // 🔥 RESET PAGE ON SEARCH
+    this.page = 1; //  RESET PAGE ON SEARCH
 
     this.loadUsers();
   }
 
-  // =========================
   // PAGINATION (NEW ADDED)
-  // =========================
   nextPage(): void {
 
     this.page++;
@@ -119,122 +151,144 @@ export class UserList implements OnInit {
       this.loadUsers();
     }
   }
+  // Page dropdown
 
-  // =========================
+  goToPage() {
+    this.loadUsers();
+  }
+
   // FORM TOGGLE
-  // =========================
   toggleForm(): void {
 
     this.showForm = !this.showForm;
   }
 
-  // =========================
   // SAVE USER
-  // =========================
   saveUser(): void {
 
-    if (!this.name || !this.email || !this.password) {
+  if (this.userForm.invalid) {
 
-      alert('All fields required');
+    this.toastr.warning('Please fill form correctly');
 
-      return;
-    }
+    this.userForm.markAllAsTouched();
 
-    const data = {
-      name: this.name,
-      email: this.email,
-      password: this.password,
-      isActive: true
-    };
-
-    if (this.editMode) {
-
-      this.userService.updateUser(this.selectedId, data)
-        .subscribe(() => {
-
-          this.resetForm();
-
-          this.loadUsers();
-        });
-
-    } else {
-
-      this.userService.addUser(data)
-        .subscribe(() => {
-
-          this.userService.registerUser(data)
-            .subscribe(() => {
-
-              this.resetForm();
-
-              this.loadUsers();
-            });
-        });
-    }
+    return;
   }
 
-  // =========================
-  // EDIT USER
-  // =========================
+  const data = this.userForm.value;
+
+  if (this.editMode) {
+
+    this.userService.updateUser(this.selectedId, data)
+      .subscribe({
+        next: () => {
+          this.toastr.info('User Updated');
+          this.loadUsers();
+          this.resetForm();
+        },
+        error: () => this.toastr.error('Update Failed')
+      });
+
+  } else {
+
+    this.userService.addUser(data)
+      .subscribe({
+        next: () => {
+          this.toastr.success('User Added');
+          this.loadUsers();
+          this.resetForm();
+        },
+        error: () => this.toastr.error('Add Failed')
+      });
+  }
+}
+    
+ // EDIT USER
   editUser(user: any): void {
 
-    this.showForm = true;
+  this.editMode = true;
+  this.selectedId = user.id;
 
-    this.editMode = true;
+  this.userForm.patchValue({
+    name: user.name,
+    email: user.email,
+    password: user.password
+  });
 
-    this.selectedId = user.id;
+  const modal = document.getElementById('userModal');
 
-    this.name = user.name;
-
-    this.email = user.email;
-
-    this.password = user.password;
+  if (modal) {
+    // @ts-ignore
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
   }
+}
 
-  // =========================
+
   // DELETE USER
-  // =========================
   deleteUser(id: any): void {
 
     if (confirm('Delete User?')) {
 
       this.userService.deleteUser(id)
-        .subscribe(() => {
+        .subscribe({
 
-          this.loadUsers();
+          next: () => {
+
+            //  TOAST
+            this.toastr.success('User Deleted');
+
+            this.loadUsers();
+          },
+
+          error: () => {
+
+            this.toastr.error('Delete Failed');
+          }
         });
     }
   }
 
-  // =========================
+
   // TOGGLE STATUS
-  // =========================
-  toggleStatus(user: any): void {
 
-    const updatedStatus = !user.isActive;
+ toggleStatus(user: any): void {
 
-    this.userService.updateUserStatus(user.id, updatedStatus)
-      .subscribe(() => {
+  const updatedStatus = !user.isActive;
 
-        this.loadUsers();
-      });
-  }
+  // UI UPDATE FIRST
+  user.isActive = updatedStatus;
 
-  // =========================
+  this.userService.updateUserStatus(user.id, updatedStatus)
+    .subscribe({
+
+      next: () => {
+
+        this.toastr.success('Status Updated');
+
+        setTimeout(() => {
+          this.loadUsers();
+        }, 0); // ✅ FIX: delay added to next macrotask
+
+      },
+
+      error: () => {
+
+        // ROLLBACK IF ERROR
+        user.isActive = !updatedStatus;
+
+        this.toastr.error('Status Update Failed');
+      }
+    });
+
+}
+
+
   // RESET FORM
-  // =========================
+
   resetForm(): void {
-
-    this.name = '';
-
-    this.email = '';
-
-    this.password = '';
-
-    this.editMode = false;
-
-    this.selectedId = null;
-
-    this.showForm = false;
-  }
+  this.userForm.reset();
+  this.editMode = false;
+  this.selectedId = null;
+} 
 }

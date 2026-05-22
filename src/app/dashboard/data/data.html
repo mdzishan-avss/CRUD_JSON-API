@@ -1,0 +1,45 @@
+<div class="container p-4">
+
+    <h3>All Saved Users Data</h3>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let user of users">
+                <td>{{ user.name }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.isActive ? 'Active' : 'Inactive' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- PAGINATION SAME -->
+    <div class="d-flex align-items-center gap-3 mt-3">
+
+        <button class="btn btn-secondary" (click)="prevPage()" [disabled]="page === 1">
+            Prev
+        </button>
+
+        <!-- PAGE DROPDOWN -->
+        <select class="form-select w-auto" [(ngModel)]="page" (change)="goToPage()">
+
+            <option *ngFor="let p of totalPagesArray" [value]="p">
+                Page {{ p }}
+            </option>
+
+        </select>
+
+        <button class="btn btn-secondary" (click)="nextPage()" [disabled]="page === totalPages">
+            Next
+        </button>
+
+    </div>

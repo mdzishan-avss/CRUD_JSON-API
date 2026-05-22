@@ -6,41 +6,48 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UserService {
 
-  apiUrl = 'http://localhost:3000/users';
-  authUrl = 'http://localhost:3000/auth';
+  private AuthUrl = 'http://localhost:3000/auth';
+    private apiUrl = 'http://localhost:3000/users';
 
-  constructor(private http: HttpClient) {}
+  private usersCache: any[] = [];
 
-  // GET USERS
+  constructor(private http: HttpClient) { }
+
   getUsers() {
-
-  return this.http.get<any[]>(this.apiUrl);
-}
-
-  // ADD USER
-  addUser(user: any) {
-    return this.http.post(this.apiUrl, user);
+    return this.http.get<any[]>(this.apiUrl);
   }
 
-  // SAVE FOR LOGIN
-  registerUser(user: any) {
-    return this.http.post(this.authUrl, user);
+  addUser(data: any) {
+    return this.http.post(this.apiUrl, data);
   }
 
-  // UPDATE USER
-  updateUser(id: any, user: any) {
-    return this.http.put(`${this.apiUrl}/${id}`, user);
+  updateUser(id: any, data: any) {
+    return this.http.put(`${this.apiUrl}/${id}`, data);
   }
 
-  // DELETE USER
   deleteUser(id: any) {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  // TOGGLE STATUS
   updateUserStatus(id: any, status: boolean) {
-    return this.http.patch(`${this.apiUrl}/${id}`, {
-      isActive: status
-    });
+    return this.http.patch(`${this.apiUrl}/${id}`, { isActive: status });
+  }
+
+  registerUser(data: any) {
+  return this.http.post(this.AuthUrl, data);
+}
+
+getAuthUsers() {
+  return this.http.get<any[]>(this.AuthUrl);
+}
+
+  //  CACHE SET
+  setUsersCache(data: any[]) {
+    this.usersCache = data || [];
+  }
+
+  //  CACHE GET SAFE
+  getUsersCache() {
+    return this.usersCache || [];
   }
 }
