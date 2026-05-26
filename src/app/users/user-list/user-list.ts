@@ -14,6 +14,8 @@ import { UserService } from '../../services/user.service';
 })
 export class UserList implements OnInit {
 
+    modalRef: any;
+
   userForm!: FormGroup;
 
   users: any[] = [];
@@ -62,14 +64,19 @@ export class UserList implements OnInit {
   }
 
   openModal() {
-    const modal = document.getElementById('userModal');
 
-    if (modal) {
-      // @ts-ignore
-      const bsModal = new bootstrap.Modal(modal);
-      bsModal.show();
-    }
+  this.resetForm();
+
+  const modal = document.getElementById('userModal');
+
+  if (modal) {
+
+    // @ts-ignore
+    this.modalRef = new bootstrap.Modal(modal);
+
+    this.modalRef.show();
   }
+}
 
   // LOAD USERS (UPDATED)
   loadUsers(): void {
@@ -186,6 +193,7 @@ const data = {
         next: () => {
           this.toastr.info('User Updated');
           this.loadUsers();
+          this.closeModal();
           this.resetForm();
         },
         error: () => this.toastr.error('Update Failed')
@@ -198,6 +206,7 @@ const data = {
         next: () => {
           this.toastr.success('User Added');
           this.loadUsers();
+          this.closeModal();
           this.resetForm();
         },
         error: () => this.toastr.error('Add Failed')
@@ -261,7 +270,7 @@ toggleStatus(user: any): void {
   user.isActive = newStatus;
 
   // USERS collection update
-  this.userService.updateUserStatus(user.id, newStatus)
+  this.userService.updateAuthStatus(user.id, newStatus)
     .subscribe({
       next: () => {
 
@@ -286,9 +295,26 @@ toggleStatus(user: any): void {
 
   // RESET FORM
 
-  resetForm(): void {
+ resetForm(): void {
+
   this.userForm.reset();
   this.editMode = false;
   this.selectedId = null;
-} 
+
+}
+
+closeModal() {
+
+  const modal = document.getElementById('userModal');
+
+  if (modal) {
+
+    // @ts-ignore
+    const bsModal = bootstrap.Modal.getInstance(modal);
+
+    if (bsModal) {
+      bsModal.hide();
+    }
+  }
+}
 }
