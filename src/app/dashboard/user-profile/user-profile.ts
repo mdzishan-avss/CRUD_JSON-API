@@ -1,10 +1,16 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule],
   templateUrl: './user-profile.html',
-  styleUrl: './user-profile.css',
+  styleUrls: ['./user-profile.css']
 })
-export class UserProfile {}
+export class UserProfile {
+
+  user: any;   
+
+  ngOnInit() {
+    this.user = JSON.parse(localStorage.getItem('user') || '{}');
+  }
+
+}

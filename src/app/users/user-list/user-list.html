@@ -27,34 +27,28 @@
 
                     <form [formGroup]="userForm">
 
-  <input class="form-control mb-2"
-         formControlName="name"
-         placeholder="Name">
+                        <input class="form-control mb-2" formControlName="name" placeholder="Name">
 
-  <small class="text-danger"
-    *ngIf="userForm.get('name')?.touched && userForm.get('name')?.invalid">
-    Name must be at least 3 characters
-  </small>
+                        <small class="text-danger"
+                            *ngIf="userForm.get('name')?.touched && userForm.get('name')?.invalid">
+                            Name must be at least 3 characters
+                        </small>
 
-  <input class="form-control mb-2"
-         formControlName="email"
-         placeholder="Email">
+                        <input class="form-control mb-2" formControlName="email" placeholder="Email">
 
-  <small class="text-danger"
-    *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid">
-    Enter valid email
-  </small>
+                        <small class="text-danger"
+                            *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid">
+                            Enter valid email
+                        </small>
 
-  <input class="form-control mb-2"
-         formControlName="password"
-         placeholder="Password">
+                        <input class="form-control mb-2" formControlName="password" placeholder="Password">
 
-  <small class="text-danger"
-    *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid">
-    Password must be minimum 4 characters
-  </small>
+                        <small class="text-danger"
+                            *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid">
+                            Password must be minimum 4 characters
+                        </small>
 
-</form>
+                    </form>
 
                 </div>
 
@@ -65,8 +59,7 @@
                         Cancel
                     </button>
 
-                    <button class="btn btn-success" (click)="saveUser()" data-bs-dismiss="modal">
-
+                    <button class="btn btn-success" (click)="saveUser()">
                         {{ editMode ? 'Update' : 'Save' }}
 
                     </button>
@@ -116,8 +109,12 @@
 
                     <div class="form-check form-switch">
 
-                        <input class="form-check-input" type="checkbox" [checked]="user.isActive"
-                            (change)="toggleStatus(user)" />
+                        <input
+  class="form-check-input"
+  type="checkbox"
+  [checked]="user.isActive"
+  (change)="toggleStatus(user)"
+>
 
                         <label class="form-check-label">
                             {{ user.isActive ? 'Active' : 'Inactive' }}

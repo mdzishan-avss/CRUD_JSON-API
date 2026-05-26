@@ -51,7 +51,7 @@ export class Login {
 
           localStorage.setItem('isLoggedIn', 'true');
 
-          this.router.navigate(['/dashboard/users']);
+          this.router.navigate(['/dashboard/user-profile']);
         },
 
         error: (err) => {

@@ -20,7 +20,7 @@ export class UserList implements OnInit {
 
   searchText = '';
 
-  isLoading = false;
+  isLoading = true;
 
   name = '';
   email = '';
@@ -175,8 +175,10 @@ export class UserList implements OnInit {
     return;
   }
 
-  const data = this.userForm.value;
-
+const data = {
+  ...this.userForm.value,
+  isActive: true
+};
   if (this.editMode) {
 
     this.userService.updateUser(this.selectedId, data)
@@ -210,7 +212,7 @@ export class UserList implements OnInit {
   this.selectedId = user.id;
 
   this.userForm.patchValue({
-    name: user.name,
+    name: user.name,  
     email: user.email,
     password: user.password
   });
@@ -251,38 +253,36 @@ export class UserList implements OnInit {
 
 
   // TOGGLE STATUS
+toggleStatus(user: any): void {
 
- toggleStatus(user: any): void {
+  const newStatus = !user.isActive;
 
-  const updatedStatus = !user.isActive;
+  // UI update first
+  user.isActive = newStatus;
 
-  // UI UPDATE FIRST
-  user.isActive = updatedStatus;
-
-  this.userService.updateUserStatus(user.id, updatedStatus)
+  // USERS collection update
+  this.userService.updateUserStatus(user.id, newStatus)
     .subscribe({
-
       next: () => {
 
+        // AUTH collection update also
+        this.userService.updateAuthStatus(
+          user.email,
+          newStatus
+        ).subscribe();
+
         this.toastr.success('Status Updated');
-
-        setTimeout(() => {
-          this.loadUsers();
-        }, 0); // ✅ FIX: delay added to next macrotask
-
       },
 
       error: () => {
 
-        // ROLLBACK IF ERROR
-        user.isActive = !updatedStatus;
+        // rollback
+        user.isActive = !newStatus;
 
         this.toastr.error('Status Update Failed');
       }
     });
-
 }
-
 
   // RESET FORM
 

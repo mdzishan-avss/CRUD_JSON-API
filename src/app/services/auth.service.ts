@@ -12,10 +12,11 @@ export class AuthService {
 
   login(email: string, password: string) {
 
-    return this.http.get<any[]>(
-      `${this.apiUrl}?email=${email}&password=${password}`
-    );
-  }
+  return this.http.get(
+    `${this.apiUrl}?email=${email}&password=${password}&isActive=true`
+  );
+
+}
 
   register(user: any) {
 
