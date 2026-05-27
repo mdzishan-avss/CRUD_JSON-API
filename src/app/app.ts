@@ -11,32 +11,3 @@ import { UserService } from './services/user.service';
 })
 export class App { }
 
-//     constructor(private userservice: UserService) {}
-//   // protected readonly title = signal('API');
-
-//   users: any[] = [];
-
-// page: number = 1;
-// limit: number = 5;
-
-// loadUsers() {
-//   this.userservice.getUsers(this.page, this.limit)
-//     .subscribe((res: any) => {
-//       this.users = res;
-//     });
-// }
-
-// nextPage() {
-//   this.page++;
-//   this.loadUsers();
-// }
-
-// prevPage() {
-//   if (this.page > 1) {
-//     this.page--;
-//     this.loadUsers();
-//   }
-// }
-
-
-// }

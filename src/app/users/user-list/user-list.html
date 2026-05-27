@@ -109,12 +109,8 @@
 
                     <div class="form-check form-switch">
 
-                        <input
-  class="form-check-input"
-  type="checkbox"
-  [checked]="user.isActive"
-  (change)="toggleStatus(user)"
->
+                        <input class="form-check-input" type="checkbox" [checked]="user.isActive"
+                            (change)="toggleStatus(user)">
 
                         <label class="form-check-label">
                             {{ user.isActive ? 'Active' : 'Inactive' }}
@@ -143,23 +139,59 @@
     </table>
     <!-- PAGINATION UI  -->
 
-    <div class="d-flex align-items-center gap-3 mt-3">
+   <div class="d-flex align-items-center justify-content-between mt-3">
 
-        <button class="btn btn-secondary" (click)="prevPage()" [disabled]="page === 1">
+    <!-- TOTAL USERS -->
+    <div>
+
+        <strong>Total Users:</strong> {{ totalUsers }}
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="d-flex align-items-center gap-3">
+
+        <button
+            class="btn btn-secondary"
+            (click)="prevPage()"
+            [disabled]="page === 1"
+        >
             Prev
         </button>
 
-        <!-- PAGE DROPDOWN -->
-        <select class="form-select w-auto" [(ngModel)]="page" (change)="goToPage()">
+        <!-- LIMIT DROPDOWN -->
+        <select
+            class="form-select w-auto"
+            [(ngModel)]="limit"
+            (change)="onLimitChange()"
+        >
 
-            <option *ngFor="let p of totalPagesArray" [value]="p">
-                Page {{ p }}
+            <option
+                *ngFor="let size of pageSizeOptions"
+                [value]="size"
+            >
+                Show {{ size }}
             </option>
 
         </select>
 
-        <button class="btn btn-secondary" (click)="nextPage()" [disabled]="page === totalPages">
+        <!-- PAGE INFO -->
+        <span class="fw-bold">
+
+            Page {{ page }} of {{ totalPages }}
+
+        </span>
+
+        <button
+            class="btn btn-secondary"
+            (click)="nextPage()"
+            [disabled]="page === totalPages"
+        >
             Next
         </button>
 
     </div>
+
+</div>
+
+</div>

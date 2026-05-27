@@ -1,4 +1,4 @@
- import { Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -44,8 +44,8 @@ export class Register {
   }
 
   submit() {
-              this.toastr.success('Registration Successful', "gdxgxdfgh");
-              console.log("dsxfsdzfvdgxd")
+    this.toastr.success('Registration Successful', "gdxgxdfgh");
+    console.log("dsxfsdzfvdgxd")
 
 
     if (this.registerForm.invalid) {
@@ -57,38 +57,38 @@ export class Register {
       return;
     }
 
-   const data = {
-  ...this.registerForm.value,
-  isActive: true
-};
+    const data = {
+      ...this.registerForm.value,
+      isActive: true
+    };
 
-this.userService.registerUser(data)
-  .subscribe({
+    this.userService.registerUser(data)
+      .subscribe({
 
-    next: () => {
+        next: () => {
 
-      this.userService.addUser(data)
-        .subscribe(() => {
+          this.userService.addUser(data)
+            .subscribe(() => {
+
+              this.toastr.success('Registration Successful');
+
+              this.registerForm.reset();
+
+              this.router.navigate(['/login']);
+            });
 
           this.toastr.success('Registration Successful');
 
           this.registerForm.reset();
 
           this.router.navigate(['/login']);
-        });
 
-      this.toastr.success('Registration Successful');
+        },
 
-      this.registerForm.reset();
+        error: () => {
 
-      this.router.navigate(['/login']);
-
-    },
-
-    error: () => {
-
-      this.toastr.error('Registration Failed');
-    }
-  }); 
+          this.toastr.error('Registration Failed');
+        }
+      });
   }
 }

@@ -11,7 +11,7 @@
       "name": "admin",
       "email": "admin@admin.com",
       "password": "admin",
-      "isActive": false,
+      "isActive": true,
       "id": "FRH8d2Ofn_w"
     },
     {
@@ -230,6 +230,13 @@
       "password": "avss",
       "isActive": true,
       "id": "jscrS769_O0"
+    },
+    {
+      "name": "Zishan",
+      "email": "qaz@qaz",
+      "password": "qazqaz",
+      "isActive": true,
+      "id": "rGAdOAws7sY"
     }
   ],
   "auth": [

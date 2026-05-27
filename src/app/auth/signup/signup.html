@@ -2,20 +2,14 @@
 
   <h2 class="mb-4">Register</h2>
 
-  <form [formGroup]="registerForm"
-        (ngSubmit)="submit()">
+  <form [formGroup]="registerForm" (ngSubmit)="submit()">
 
     <!-- NAME -->
     <div class="mb-3">
 
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Name"
-        formControlName="name">
+      <input type="text" class="form-control" placeholder="Name" formControlName="name">
 
-      <small class="text-danger"
-             *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.invalid">
+      <small class="text-danger" *ngIf="registerForm.get('name')?.touched && registerForm.get('name')?.invalid">
 
         Name must be minimum 3 characters
 
@@ -26,14 +20,9 @@
     <!-- EMAIL -->
     <div class="mb-3">
 
-      <input
-        type="email"
-        class="form-control"
-        placeholder="Email"
-        formControlName="email">
+      <input type="email" class="form-control" placeholder="Email" formControlName="email">
 
-      <small class="text-danger"
-             *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
+      <small class="text-danger" *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
 
         Enter valid email
 
@@ -44,14 +33,9 @@
     <!-- PASSWORD -->
     <div class="mb-3">
 
-      <input
-        type="password"
-        class="form-control"
-        placeholder="Password"
-        formControlName="password">
+      <input type="password" class="form-control" placeholder="Password" formControlName="password">
 
-      <small class="text-danger"
-             *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+      <small class="text-danger" *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
 
         Password minimum 4 characters
 

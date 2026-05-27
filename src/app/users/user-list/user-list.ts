@@ -14,7 +14,7 @@ import { UserService } from '../../services/user.service';
 })
 export class UserList implements OnInit {
 
-    modalRef: any;
+  modalRef: any;
 
   userForm!: FormGroup;
 
@@ -39,6 +39,8 @@ export class UserList implements OnInit {
 
   totalPages = 1;
   totalPagesArray: number[] = [];
+  totalUsers = 0;
+  pageSizeOptions: number[] = [5, 10, 20, 30, 40, 50];
 
   constructor(
     private userService: UserService,
@@ -65,18 +67,18 @@ export class UserList implements OnInit {
 
   openModal() {
 
-  this.resetForm();
+    this.resetForm();
 
-  const modal = document.getElementById('userModal');
+    const modal = document.getElementById('userModal');
 
-  if (modal) {
+    if (modal) {
 
-    // @ts-ignore
-    this.modalRef = new bootstrap.Modal(modal);
+      // @ts-ignore
+      this.modalRef = new bootstrap.Modal(modal);
 
-    this.modalRef.show();
+      this.modalRef.show();
+    }
   }
-}
 
   // LOAD USERS (UPDATED)
   loadUsers(): void {
@@ -99,8 +101,9 @@ export class UserList implements OnInit {
               user.name.toLowerCase().includes(this.searchText.toLowerCase())
             )
             : res;
-            filtered = filtered.reverse();
+          filtered = filtered.reverse();
 
+          this.totalUsers = filtered.length;
 
           this.totalPages = Math.ceil(filtered.length / this.limit);
 
@@ -158,6 +161,12 @@ export class UserList implements OnInit {
       this.loadUsers();
     }
   }
+  onLimitChange(): void {
+
+    this.page = 1;
+
+    this.loadUsers();
+  }
   // Page dropdown
 
   goToPage() {
@@ -173,67 +182,67 @@ export class UserList implements OnInit {
   // SAVE USER
   saveUser(): void {
 
-  if (this.userForm.invalid) {
+    if (this.userForm.invalid) {
 
-    this.toastr.warning('Please fill form correctly');
+      this.toastr.warning('Please fill form correctly');
 
-    this.userForm.markAllAsTouched();
+      this.userForm.markAllAsTouched();
 
-    return;
+      return;
+    }
+
+    const data = {
+      ...this.userForm.value,
+      isActive: true
+    };
+    if (this.editMode) {
+
+      this.userService.updateUser(this.selectedId, data)
+        .subscribe({
+          next: () => {
+            this.toastr.info('User Updated');
+            this.loadUsers();
+            this.closeModal();
+            this.resetForm();
+          },
+          error: () => this.toastr.error('Update Failed')
+        });
+
+    } else {
+
+      this.userService.addUser(data)
+        .subscribe({
+          next: () => {
+            this.toastr.success('User Added');
+            this.loadUsers();
+            this.closeModal();
+            this.resetForm();
+          },
+          error: () => this.toastr.error('Add Failed')
+        });
+    }
   }
 
-const data = {
-  ...this.userForm.value,
-  isActive: true
-};
-  if (this.editMode) {
-
-    this.userService.updateUser(this.selectedId, data)
-      .subscribe({
-        next: () => {
-          this.toastr.info('User Updated');
-          this.loadUsers();
-          this.closeModal();
-          this.resetForm();
-        },
-        error: () => this.toastr.error('Update Failed')
-      });
-
-  } else {
-
-    this.userService.addUser(data)
-      .subscribe({
-        next: () => {
-          this.toastr.success('User Added');
-          this.loadUsers();
-          this.closeModal();
-          this.resetForm();
-        },
-        error: () => this.toastr.error('Add Failed')
-      });
-  }
-}
-    
- // EDIT USER
+  // EDIT USER
   editUser(user: any): void {
 
-  this.editMode = true;
-  this.selectedId = user.id;
+    this.editMode = true;
+    this.selectedId = user.id;
 
-  this.userForm.patchValue({
-    name: user.name,  
-    email: user.email,
-    password: user.password
-  });
+    this.userForm.patchValue({
+      name: user.name,
+      email: user.email,
+      password: user.password
+    });
 
-  const modal = document.getElementById('userModal');
+    const modal = document.getElementById('userModal');
 
-  if (modal) {
-    // @ts-ignore
-    const bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
+    if (modal) {
+      // @ts-ignore
+      const bsModal = new bootstrap.Modal(modal);
+      bsModal.show();
+    }
   }
-}
 
 
   // DELETE USER
@@ -262,59 +271,59 @@ const data = {
 
 
   // TOGGLE STATUS
-toggleStatus(user: any): void {
+  toggleStatus(user: any): void {
 
-  const newStatus = !user.isActive;
+    const newStatus = !user.isActive;
 
-  // UI update first
-  user.isActive = newStatus;
+    // UI update first
+    user.isActive = newStatus;
 
-  // USERS collection update
-  this.userService.updateAuthStatus(user.id, newStatus)
-    .subscribe({
-      next: () => {
+    // USERS collection update
+    this.userService.updateAuthStatus(user.id, newStatus)
+      .subscribe({
+        next: () => {
 
-        // AUTH collection update also
-        this.userService.updateAuthStatus(
-          user.email,
-          newStatus
-        ).subscribe();
+          // AUTH collection update also
+          this.userService.updateAuthStatus(
+            user.email,
+            newStatus
+          ).subscribe();
 
-        this.toastr.success('Status Updated');
-      },
+          this.toastr.success('Status Updated');
+        },
 
-      error: () => {
+        error: () => {
 
-        // rollback
-        user.isActive = !newStatus;
+          // rollback
+          user.isActive = !newStatus;
 
-        this.toastr.error('Status Update Failed');
-      }
-    });
-}
+          this.toastr.error('Status Update Failed');
+        }
+      });
+  }
 
   // RESET FORM
 
- resetForm(): void {
+  resetForm(): void {
 
-  this.userForm.reset();
-  this.editMode = false;
-  this.selectedId = null;
+    this.userForm.reset();
+    this.editMode = false;
+    this.selectedId = null;
 
-}
+  }
 
-closeModal() {
+  closeModal() {
 
-  const modal = document.getElementById('userModal');
+    const modal = document.getElementById('userModal');
 
-  if (modal) {
+    if (modal) {
 
-    // @ts-ignore
-    const bsModal = bootstrap.Modal.getInstance(modal);
+      // @ts-ignore
+      const bsModal = bootstrap.Modal.getInstance(modal);
 
-    if (bsModal) {
-      bsModal.hide();
+      if (bsModal) {
+        bsModal.hide();
+      }
     }
   }
-}
 }
